@@ -21,19 +21,12 @@ body
 	padding: 10px 0;
 }
 
-.content_text
-{
-	font-weight: bold;
-	font-size: 5em;
-	color: #fff;
-}
-
 #picker-form
 {
 	display: none;
 }
 
-#ui-am-pm, #ui-hour, #ui-minute
+#am-pm, #hour, #minute
 {
 	display: -webkit-flex;
 	-webkit-flex: 1;
@@ -41,7 +34,7 @@ body
 	position: relative;
 }
 
-#ui-hour
+#hour
 {
 	border: 1px #fff solid;
 	border-top: 0px;

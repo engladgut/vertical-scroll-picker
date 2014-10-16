@@ -6,12 +6,20 @@ $ (window ).load( function()
 			tizen.application.getCurrentApplication().exit();
     } );
 	
+	var itemHeight = 100,
+		maxPosY = itemHeight,
+		rowCnt = 3;
 	
 	$( '.contents > div' ).each( function()
 	{
 		var mc = new Hammer( this ),
-			$self = $( this );
+			$self = $( this ),
+			minPosY = ( $self.find( 'ul li' ).length - rowCnt + 1 ) * itemHeight * -1,
+			$input = $( '#input-' + $self.attr( 'id' ) );
 
+		$self.find( 'ul' ).css( 'transform', 'translate3d( 0, ' + maxPosY + 'px, 0 )' );
+		$self.data( 'position-y', maxPosY );
+		
 		mc.get( 'pan' ).set( { direction: Hammer.DIRECTION_ALL } );
 		mc.on( 'panup pandown', function( ev )
 		{
@@ -25,7 +33,6 @@ $ (window ).load( function()
 		
 		mc.on( 'panend', function( ev )
 		{
-
 			var lastPosY = Number( $self.data( 'position-y' ) ),
 				posY = ev.deltaY + lastPosY,
 				v = Math.abs( $self.data( 'velocity-y' ) );
@@ -47,8 +54,7 @@ $ (window ).load( function()
 				posY += posOffsetY;
 			}
 			
-			var itemHeight = 100,
-				overflow = itemHeight - Math.abs( posY % 100 );
+			var overflow = itemHeight - Math.abs( posY % 100 );
 			
 			if( Math.abs( posY % 100 ) < 50 ) posY -= posY % 100;
 			else
@@ -57,8 +63,32 @@ $ (window ).load( function()
 				else posY += overflow;
 			}
 			
+			if( posY > maxPosY ) posY = maxPosY;
+			else if( posY < minPosY ) posY = minPosY;
+			
+			var selectedItemIdx = Math.abs( ( posY - 100 ) / 100 );
+			$input.val( $self.find( 'ul li' ).eq( selectedItemIdx ).html() );
+			
 			$self.find( 'ul' ).css( 'transform', 'translate3d( 0, ' + posY + 'px, 0 )' );
 			$self.data( 'position-y', posY );
 		} );
 	} );
 } );
+
+function getTime()
+{
+	var $item = $( '.contents > div' ),
+		result = '';
+	
+	for( var i = 0; i < $item.length; i++ )
+	{
+		var posY = Number( $item.eq( i ).data( 'position-y' ) ),
+			selectedItemIdx = Math.abs( ( posY - 100 ) / 100 );
+		
+		result += $item.eq( i ).find( 'ul li' ).eq( selectedItemIdx ).html() + ' ';
+	}
+	
+	console.log( 'selected time', result );
+	
+	return result;
+}
